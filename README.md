@@ -6,5 +6,14 @@ This [updated version of the tutorial code](https://github.com/jhosehprendon/tau
 
 ## Other Helpful Resources
 
+### Backend
+
 * [Tips for Unit Testing Ethereum Smart Contracts in Solidity](https://betterprogramming.pub/a-few-tips-for-unit-testing-ethereum-smart-contract-in-solidity-d804062068fb)
 * [Mocha assertions](https://mochajs.org/#assertions)
+
+### Frontend
+
+* [Bootstrap 5 Download](https://getbootstrap.com/docs/5.0/getting-started/download/)
+* [web3.js](https://github.com/ChainSafe/web3.js)
+* [@truffle/contract](https://www.npmjs.com/package/@truffle/contract)
+* [jsDelivr](https://www.jsdelivr.com)
