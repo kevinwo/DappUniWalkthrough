@@ -2,6 +2,10 @@ App = {
   web3Provider: null,
   contracts: {},
   account: '0x0',
+  loading: false,
+  tokenPrice: 1000000000000000,
+  tokensSold: 0,
+  tokensAvailable: 750000,
 
   init: () => {
     console.log("App initialized...")
@@ -57,17 +61,86 @@ App = {
         App.contracts.DappToken.deployed().then((token) => {
           console.log("Dapp Token Address:", token.address);
         });
+        App.listenForEvents();
+
         return App.render();
       });
     })
   },
 
+  listenForEvents: () => {
+    App.contracts.DappTokenSale.deployed().then((instance) => {
+      instance.Sell({
+        fromBlock: 0
+      }, function(error, event) {
+        App.render();
+      });
+    })
+  },
+
   render: () => {
+    if (App.loading) {
+      return;
+    }
+
+    App.loading = true;
+
+    var loader = $('#loader');
+    var content = $('#content');
+
+    loader.show();
+    content.hide();
+
     web3.eth.getCoinbase(function(error, account) {
       if (error === null) {
         App.account = account;
         $('#accountAddress').html("Your Account: " + account);
       }
+    });
+
+    App.contracts.DappTokenSale.deployed().then((instance) => {
+      dappTokenSaleInstance = instance;
+      return dappTokenSaleInstance.tokenPrice();
+    }).then((tokenPrice) => {
+      App.tokenPrice = tokenPrice;
+      $('.token-price').html(web3.utils.fromWei(App.tokenPrice, "ether"));
+      return dappTokenSaleInstance.tokensSold();
+    }).then((tokensSold) => {
+      App.tokensSold = tokensSold.toNumber();
+      $('.tokens-sold').html(App.tokensSold);
+      $('.tokens-available').html(App.tokensAvailable);
+
+      var progressPercent = (App.tokensSold / App.tokensAvailable) * 100;
+      $('#progress').css('width', progressPercent + '%');
+
+      App.contracts.DappToken.deployed().then((instance) => {
+        dappTokenInstance = instance;
+        return dappTokenInstance.balanceOf(App.account);
+      }).then((balance) => {
+        $('.dapp-balance').html(balance.toNumber());
+
+        App.loading = false;
+        loader.hide();
+        content.show();
+      });
+    });
+  },
+
+  buyTokens: () => {
+    $('#content').hide();
+    $('#loader').show();
+    var numberOfTokens = $('#numberOfTokens').val();
+
+    App.contracts.DappTokenSale.deployed().then((instance) => {
+      return instance.buyTokens(numberOfTokens, {
+        from: App.account,
+        value: numberOfTokens * App.tokenPrice,
+        gas: 500000
+      }).then((result) => {
+        console.log("Tokens bought...");
+        $('form').trigger('reset');
+        // Wait for Sell event
+      });
     });
   }
 }
