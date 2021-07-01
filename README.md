@@ -17,3 +17,7 @@ This [updated version of the tutorial code](https://github.com/jhosehprendon/tau
 * [web3.js](https://github.com/ChainSafe/web3.js)
 * [@truffle/contract](https://www.npmjs.com/package/@truffle/contract)
 * [jsDelivr](https://www.jsdelivr.com)
+
+### Deploying to Rinkeby
+
+* When you import your test wallet into MetaMask, expect to wait a few minutes. It looks frozen, but it's not.
